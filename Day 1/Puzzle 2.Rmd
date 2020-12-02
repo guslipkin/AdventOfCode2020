@@ -11,7 +11,7 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 
-df <- read.csv("../December 1/Input.csv")
+df <- read.csv("../Day 1/Input.csv")
 head(df)
 ```
 
