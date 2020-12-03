@@ -1,0 +1,142 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+df <- read.csv("../Day 3/input2.csv")
+df
+```
+
+```{r}
+over <- NA
+down <- NA
+
+running_total <- 1
+```
+
+
+> R1D1
+
+```{r}
+x <- 1
+pounds <- ""
+xVals <- c()
+
+over <- 1
+down <- 1
+
+for(y in seq(1, 323, by = down)) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  if(x + over > 31)
+    x <- x + over - 31
+  else
+    x <- x + over
+  xVals <- append(xVals, as.character(x))
+}
+
+count <- str_count(pounds, "#")
+
+running_total <- running_total * count
+```
+
+> R3D1
+
+```{r}
+x <- 1
+pounds <- ""
+xVals <- c()
+
+over <- 3
+down <- 1
+
+for(y in seq(1, 323, by = down)) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  if(x + over > 31)
+    x <- x + over - 31
+  else
+    x <- x + over
+  xVals <- append(xVals, as.character(x))
+}
+
+count <- str_count(pounds, "#")
+
+running_total <- running_total * count
+```
+
+> R5D1
+
+```{r}
+x <- 1
+pounds <- ""
+xVals <- c()
+
+over <- 5
+down <- 1
+
+for(y in seq(1, 323, by = down)) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  if(x + over > 31)
+    x <- x + over - 31
+  else
+    x <- x + over
+  xVals <- append(xVals, as.character(x))
+}
+
+count <- str_count(pounds, "#")
+
+running_total <- running_total * count
+```
+
+> R7D1
+
+```{r}
+x <- 1
+pounds <- ""
+xVals <- c()
+
+over <- 7
+down <- 1
+
+for(y in seq(1, 323, by = down)) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  if(x + over > 31)
+    x <- x + over - 31
+  else
+    x <- x + over
+  xVals <- append(xVals, as.character(x))
+}
+
+count <- str_count(pounds, "#")
+
+running_total <- running_total * count
+```
+
+> R1D2
+
+```{r}
+x <- 1
+pounds <- ""
+xVals <- c()
+
+over <- 1
+down <- 2
+
+for(y in seq(1, 323, by = down)) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  if(x + over > 31)
+    x <- x + over - 31
+  else
+    x <- x + over
+  xVals <- append(xVals, as.character(x))
+}
+
+count <- str_count(pounds, "#")
+
+running_total <- running_total * count
+```
+
+```{r}
+running_total
+```
+

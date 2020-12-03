@@ -1,0 +1,58 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+> Everything from here to line 32 doesn't work, but I'm keeping it here for posterity.
+
+```{r}
+library(tidyverse)
+
+df <- read.csv("../Day 3/input.csv")
+df
+```
+
+```{r}
+pounds <- ""
+
+x <- 1
+xVals <- c("")
+
+for(y in 1:323) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  x <- x + 3
+  if(x > 341)
+    break
+  xVals <- append(xVals, as.character(x))
+}
+
+pounds
+
+str_count(pounds, "#")
+xVals
+length(xVals)
+```
+
+```{r}
+df <- read.csv("../Day 3/input2.csv")
+df
+```
+
+```{r}
+x <- 1
+pounds <- ""
+xVals <- c()
+
+for(y in 1:323) {
+  pounds <- paste(pounds, as.character(df[y, x]), sep = "")
+  if(x + 3 > 31)
+    x <- x + 3 - 31
+  else
+    x <- x + 3
+  xVals <- append(xVals, as.character(x))
+}
+
+pounds
+xVals
+str_count(pounds, "#")
+```
+
