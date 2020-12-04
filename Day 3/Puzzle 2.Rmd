@@ -4,6 +4,8 @@ output: html_notebook
 ---
 
 ```{r}
+library(tidyverse)
+
 df <- read.csv("../Day 3/input2.csv")
 df
 ```
