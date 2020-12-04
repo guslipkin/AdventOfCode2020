@@ -9,7 +9,7 @@ library(readxl)
 library(stringr)
 
 df <- read_excel("../Day 4/input.xls")
-#df <- read_xlsx("../Day 4/input2.xlsx")
+#df <- read_xlsx("../Day 4/owen.xlsx")
 df
 ```
 
@@ -39,16 +39,20 @@ for(r in 1:1169) {
 
 passports <- testDF
 passports
+
+matt <- passports
+matt$valid <- FALSE
+matt
 ```
 
 ```{r}
 valid <- passports[1,]
 
 for(r in 1:299) {
-  if(rowSums(is.na(passports[r,])) == 0)
+  if(rowSums(is.na(passports[r,])) == 0 | !(apply(passports[r,], 1, function(x) any(substr(x, 1, 3) %in% "cid"))) & rowSums(is.na(passports[r,])) == 1) {
       valid <- rbind(valid, passports[r,])
-  else if(!(apply(passports[r,], 1, function(x) any(substr(x, 1, 3) %in% "cid"))) & rowSums(is.na(passports[r,])) == 1)
-      valid <- rbind(valid, passports[r,])
+      matt$valid[r] <- TRUE
+  }
 }
 valid <- valid[-1,]
 valid
@@ -92,6 +96,46 @@ for(r in 1:247) {
 
 #sorted <- sorted[-1,]
 sorted
+
+
+newmatt <- matt[1,]
+
+for(r in 1:299) {
+  for(c in 1:8) {
+    if(!is.na(matt[r,c])) {
+      if(substr(matt[r,c], 1, 3) == "byr")
+        newmatt[r,1] <- matt[r,c]
+      
+      else if(substr(matt[r,c], 1, 3) == "iyr") 
+        newmatt[r,2] <- matt[r,c]
+      
+      else if(substr(matt[r,c], 1, 3) == "eyr")
+        newmatt[r,3] <- matt[r,c]
+      
+      else if(substr(matt[r,c], 1, 3) == "hgt") 
+        newmatt[r,4] <- matt[r,c]
+    
+      else if(substr(matt[r,c], 1, 5) == "hcl:#") 
+        newmatt[r,5] <- matt[r,c]
+      
+      else if(substr(matt[r,c], 1, 3) == "ecl") 
+        newmatt[r,6] <- matt[r,c]
+      
+      else if(substr(matt[r,c], 1, 3) == "pid") 
+        newmatt[r,7] <- matt[r,c]
+      
+      else if(substr(matt[r,c], 1, 3) == "cid")
+        newmatt[r,8] <- matt[r,c]
+      
+    }
+    else
+      newmatt[r,c] <- NA
+  }
+  newmatt[r,9] <- matt[r,9]
+}
+
+#sorted <- sorted[-1,]
+newmatt
 ```
 
 ```{r}
@@ -104,6 +148,16 @@ sorted$X6 <- substr(sorted$X6, 5, nchar(sorted$X6))
 sorted$X7 <- substr(sorted$X7, 5, nchar(sorted$X7))
 sorted$X8[!is.na(sorted$X8)] <- TRUE
 sorted
+
+newmatt$X1 <- str_replace_all(newmatt$X1, "[a-z:]", "")
+newmatt$X2 <- str_replace_all(newmatt$X2, "[a-z:]", "")
+newmatt$X3 <- str_replace_all(newmatt$X3, "[a-z:]", "")
+newmatt$X4 <- substr(newmatt$X4, 5, nchar(newmatt$X4))
+newmatt$X5 <- substr(newmatt$X5, 5, nchar(newmatt$X5))
+newmatt$X6 <- substr(newmatt$X6, 5, nchar(newmatt$X6))
+newmatt$X7 <- substr(newmatt$X7, 5, nchar(newmatt$X7))
+newmatt$X8[!is.na(newmatt$X8)] <- TRUE
+newmatt
 ```
 
 ```{r}
@@ -117,6 +171,20 @@ sorted %>%
   filter(substr(X4, nchar(X4) - 1, nchar(X4)) == "cm" & as.numeric(str_replace_all(X4, "[cm]", "")) >= 150 & as.numeric(str_replace_all(X4, "[cm]", "")) <= 193 | 
            substr(X4, nchar(X4) - 1, nchar(X4)) == "in" & as.numeric(str_replace_all(X4, "[in]", "")) >= 59 & as.numeric(str_replace_all(X4, "[in]", "")) <= 76) %>%
   filter(substr(X5, 1, 1) == "#" & grepl("[0-9a-f]", substr(X5, 2, nchar(X5) - 1))) 
+
+newmatt$valid[!is.na(newmatt$X1) & !is.na(newmatt$X2) & !is.na(newmatt$X3) &  !is.na(newmatt$X4) &  !is.na(newmatt$X5) &  !is.na(newmatt$X6) &  !is.na(newmatt$X7) & 
+          newmatt$X1 >= 1920 & newmatt$X1 <= 2002 &
+          newmatt$X2 >= 2010 & newmatt$X2 <= 2020 &
+          newmatt$X3 >= 2020 & newmatt$X3 <= 2030 &
+          nchar(newmatt$X7) == 9 & grepl("[0-9]", newmatt$X7)& 
+          grepl("(amb|blu|grn|gry|grn|hzl|oth)", newmatt$X6) &
+          substr(newmatt$X4, nchar(newmatt$X4) - 1, nchar(newmatt$X4)) == "cm" & as.numeric(str_replace_all(newmatt$X4, "[cm]", "")) >= 150 & as.numeric(str_replace_all(newmatt$X4, "[cm]", "")) <= 193 | 
+           substr(newmatt$X4, nchar(newmatt$X4) - 1, nchar(newmatt$X4)) == "in" & as.numeric(str_replace_all(newmatt$X4, "[in]", "")) >= 59 & as.numeric(str_replace_all(newmatt$X4, "[in]", "")) <= 76 &
+          substr(newmatt$X5, 1, 1) == "#" & grepl("[0-9a-f]", substr(newmatt$X5, 2, nchar(newmatt$X5) - 1))] <- TRUE
+
+newmatt
+
+write.csv(newmatt, "../Day 4/newmatt.csv")
 ```
 
 
