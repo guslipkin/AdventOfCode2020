@@ -43,83 +43,6 @@ passports
 ```
 
 ```{r}
-valid <- passports[1,]
-
-for(r in 2:299) {
-  if(rowSums(is.na(passports[r,])) == 0 | !(apply(passports[r,], 1, function(x) any(substr(x, 1, 3) %in% "cid"))) & rowSums(is.na(passports[r,])) == 1) {
-      valid <- rbind(valid, passports[r,])
-      matt$valid[r] <- TRUE
-  }
-}
-valid
-```
-
-```{r}
-sorted <- valid[1,]
-
-for(r in 1:247) {
-  for(c in 1:8) {
-    if(!is.na(valid[r,c])) {
-      if(substr(valid[r,c], 1, 3) == "byr")
-        sorted[r,1] <- valid[r,c]
-      
-      else if(substr(valid[r,c], 1, 3) == "iyr") 
-        sorted[r,2] <- valid[r,c]
-      
-      else if(substr(valid[r,c], 1, 3) == "eyr")
-        sorted[r,3] <- valid[r,c]
-      
-      else if(substr(valid[r,c], 1, 3) == "hgt") 
-        sorted[r,4] <- valid[r,c]
-    
-      else if(substr(valid[r,c], 1, 5) == "hcl:#") 
-        sorted[r,5] <- valid[r,c]
-      
-      else if(substr(valid[r,c], 1, 3) == "ecl") 
-        sorted[r,6] <- valid[r,c]
-      
-      else if(substr(valid[r,c], 1, 3) == "pid") 
-        sorted[r,7] <- valid[r,c]
-      
-      else if(substr(valid[r,c], 1, 3) == "cid")
-        sorted[r,8] <- valid[r,c]
-      
-    }
-    else
-      sorted[r,c] <- NA
-  }
-}
-
-#sorted <- sorted[-1,]
-sorted
-```
-
-```{r}
-sorted$X1 <- str_replace_all(sorted$X1, "[a-z:]", "")
-sorted$X2 <- str_replace_all(sorted$X2, "[a-z:]", "")
-sorted$X3 <- str_replace_all(sorted$X3, "[a-z:]", "")
-sorted$X4 <- substr(sorted$X4, 5, nchar(sorted$X4))
-sorted$X5 <- substr(sorted$X5, 5, nchar(sorted$X5))
-sorted$X6 <- substr(sorted$X6, 5, nchar(sorted$X6))
-sorted$X7 <- substr(sorted$X7, 5, nchar(sorted$X7))
-sorted$X8[!is.na(sorted$X8)] <- TRUE
-sorted
-```
-
-```{r}
-sorted %>%
-  filter(!is.na(X1) & !is.na(X2) & !is.na(X3) &  !is.na(X4) &  !is.na(X5) &  !is.na(X6) &  !is.na(X7)) %>%
-  filter(X1 >= 1920 & X1 <= 2002) %>%
-  filter(X2 >= 2010 & X2 <= 2020) %>%
-  filter(X3 >= 2020 & X3 <= 2030) %>%
-  filter(nchar(X7) == 9 & grepl("[0-9]", X7)) %>%
-  filter(grepl("(amb|blu|grn|gry|grn|hzl|oth)", X6)) %>%
-  filter(substr(X4, nchar(X4) - 1, nchar(X4)) == "cm" & as.numeric(str_replace_all(X4, "[cm]", "")) >= 150 & as.numeric(str_replace_all(X4, "[cm]", "")) <= 193 | 
-           substr(X4, nchar(X4) - 1, nchar(X4)) == "in" & as.numeric(str_replace_all(X4, "[in]", "")) >= 59 & as.numeric(str_replace_all(X4, "[in]", "")) <= 76) %>%
-  filter(substr(X5, 1, 1) == "#" & grepl("[0-9a-f]", substr(X5, 2, nchar(X5) - 1))) 
-```
-
-```{r}
 matt <- passports[1,]
 matt$valid <- NA
 
@@ -189,121 +112,19 @@ newmatt <- newmatt %>% filter(valid == TRUE)
 newmatt$valid <- TRUE
 
 #the ants go marching one by one...
-flag <- 0
+newmatt$flag <- 0
 
-newmatt$valid <- ifelse(newmatt$X1 >= 1920 & newmatt$X1 <= 2002 & newmatt$valid == TRUE, TRUE, FALSE)
-newmatt$valid <- ifelse(newmatt$X2 >= 2010 & newmatt$X2 <= 2020 & newmatt$valid == TRUE, TRUE, FALSE)
-newmatt$valid <- ifelse(newmatt$X3 >= 2020 & newmatt$X3 <= 2030 & newmatt$valid == TRUE, TRUE, FALSE)
-ifelse(newmatt$valid == TRUE & grepl("cm", newmatt$X4) & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) >= 150 & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) <= 193, flag + 1, flag)
-ifelse(newmatt$valid == TRUE & grepl("in", newmatt$X4) & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) >= 59 & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) <= 76, flag + 1, flag)
-newmatt$valid <- ifelse(flag == 1, TRUE, FALSE)
-newmatt$valid <- ifelse(substr(newmatt$X5, 1, 1) == "#" & grepl("[0-9a-f]", substr(newmatt$X5, 2, nchar(newmatt$X5) - 1)) & newmatt$valid == TRUE, TRUE, FALSE)
-newmatt$valid <- ifelse(grepl("(amb|blu|grn|gry|grn|hzl|oth)", newmatt$X6) & newmatt$valid == TRUE, TRUE, FALSE)
+newmatt$valid <- ifelse(newmatt$X1 >= 1920 & newmatt$X1 <= 2002 & newmatt$valid == TRUE, TRUE, FALSE) #197
+newmatt$valid <- ifelse(newmatt$X2 >= 2010 & newmatt$X2 <= 2020 & newmatt$valid == TRUE, TRUE, FALSE) #174
+newmatt$valid <- ifelse(newmatt$X3 >= 2020 & newmatt$X3 <= 2030 & newmatt$valid == TRUE, TRUE, FALSE) #160
+newmatt$flag <- ifelse(newmatt$valid == TRUE & grepl("cm", newmatt$X4) & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) >= 150 & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) <= 193, newmatt$flag + 1, newmatt$flag)
+newmatt$flag <- ifelse(newmatt$valid == TRUE & grepl("in", newmatt$X4) & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) >= 59 & as.numeric(str_replace_all(newmatt$X4, "[a-z]", "")) <= 76, newmatt$flag + 1, newmatt$flag)
+newmatt$valid <- ifelse(newmatt$flag == 1, TRUE, FALSE) #154
+newmatt$valid <- ifelse(substr(newmatt$X5, 1, 1) == "#" & grepl("[0-9a-f#]", substr(newmatt$X5, 2, nchar(newmatt$X5) - 1)) & nchar(newmatt$X5) == 7 & newmatt$valid == TRUE, TRUE, FALSE) #151
+newmatt$valid <- ifelse(grepl("(amb|blu|brn|gry|grn|hzl|oth)", newmatt$X6) & newmatt$valid == TRUE, TRUE, FALSE) #125
 newmatt$valid <- ifelse(nchar(newmatt$X7) == 9 & grepl("[0-9]", newmatt$X7) & newmatt$valid == TRUE, TRUE, FALSE)
 
 newmatt %>%
   filter(valid == TRUE)
-
-newmatt
-
-newmatt %>%
-  filter(X1 >= 1920 & X1 <= 2002) %>%
-  filter(X2 >= 2010 & X2 <= 2020) %>%
-  filter(X3 >= 2020 & X3 <= 2030) %>%
-  filter(substr(X4, nchar(X4) - 1, nchar(X4)) == "cm" & as.numeric(str_replace_all(X4, "[cm]", "")) >= 150 & as.numeric(str_replace_all(X4, "[cm]", "")) <= 193 | 
-           substr(X4, nchar(X4) - 1, nchar(X4)) == "in" & as.numeric(str_replace_all(X4, "[in]", "")) >= 59 & as.numeric(str_replace_all(X4, "[in]", "")) <= 76) %>%
-  filter(substr(X5, 1, 1) == "#" & grepl("[0-9a-f]", substr(X5, 2, nchar(X5) - 1))) %>%
-  filter(grepl("(amb|blu|grn|gry|grn|hzl|oth)", X6)) %>%
-  filter(nchar(X7) == 9 & grepl("[0-9]", X7))
-
-write.csv(newmatt, "../Day 4/newmatt.csv")
 ```
 
-
-```{r, eval=FALSE}
-count <- 0
-
-byrflag <- FALSE
-iyrflag <- FALSE
-eyrflag <- FALSE
-hgtflag <- FALSE
-hclflag <- FALSE
-eclflag <- FALSE
-pidflag <- FALSE
-cidflag <- FALSE
-
-for(r in 1:247) {
-  for(c in 1:8) {
-    if(!is.na(valid[r,c])) {
-      
-      if(substr(valid[r,c], 1, 3) == "byr") {
-        byr <- str_replace_all(valid[r,c], "[a-z:]", "")
-        if(as.integer(byr) >= 1920 & as.integer(byr) <= 2002)
-          byrflag <- TRUE
-      }
-      
-      else if(substr(valid[r,c], 1, 3) == "iyr") {
-        iyr <- str_replace_all(valid[r,c], "[a-z:]", "")
-        if(as.numeric(iyr) >= 2010 & as.numeric(iyr) <= 2020)
-          iyrflag <- TRUE
-      }
-      
-      else if(substr(valid[r,c], 1, 3) == "eyr") {
-        eyr <- str_replace_all(valid[r,c], "[a-z:]", "")
-        if(as.numeric(eyr) >= 2020 & as.numeric(eyr) <= 2030)
-          eyrflag <- TRUE
-      }
-      
-      else if(substr(valid[r,c], 1, 3) == "hgt") {
-        #cm
-        if(substr(valid[r,c], nchar(valid[r,c]) - 1, nchar(valid[r,c])) == "cm") {
-          hgt <- str_replace_all(valid[r,c], "[a-z:]", "")
-          if(as.numeric(hgt) >= 150 & as.numeric(hgt) <= 193)
-            hgtflag <- TRUE
-        }
-        #in
-        else if(substr(valid[r,c], nchar(valid[r,c]) - 1, nchar(valid[r,c])) == "in") {
-          hgt <- str_replace_all(valid[r,c], "[a-z:]", "")
-          if(as.numeric(hgt) >= 59 & as.numeric(hgt) <= 76)
-            hgtflag <- TRUE
-        }
-      }
-    
-      else if(substr(valid[r,c], 1, 5) == "hcl:#") {
-        if(grepl("[a-f0-9]", valid[r,c]) & nchar(substr(valid[r,c], 5, nchar(valid[r,c]))) == 6)
-          hclflag <- TRUE
-      }  
-      
-      else if(substr(valid[r,c], 1, 3) == "ecl") {
-        if(grepl("(amb|blu|grn|gry|grn|hzl|oth)", substr(valid[r,c], 5, 8)))
-          eclflag <- TRUE
-      }
-      
-      else if(substr(valid[r,c], 1, 3) == "pid") {
-        pid <- str_replace_all(valid[r,c], "[a-z:]", "")
-        if(nchar(pid) == 9)
-          pidflag <- TRUE
-      }
-      
-      else if(substr(valid[r,c], 1, 3) == "cid")
-        cidflag <- TRUE
-      
-    }
-  }
-  if(byrflag == TRUE & iyrflag == TRUE & eyrflag == TRUE & hgtflag == TRUE & hclflag == TRUE & eclflag == TRUE & pidflag == TRUE)
-    count <- count + 1
-  
-  byrflag <- FALSE
-  iyrflag <- FALSE
-  eyrflag <- FALSE
-  hgtflag <- FALSE
-  hclflag <- FALSE
-  eclflag <- FALSE
-  pidflag <- FALSE
-  cidflag <- FALSE
-}
-
-count
-```
-
-# 124 < x < 229
