@@ -1,0 +1,36 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(sets)
+
+df <- read.csv("../Day 7/input.csv")
+
+df$child2C[as.character(df$child2C) == " "] <- NA
+df$child3C[as.character(df$child3C) == " "] <- NA
+df$child4C[as.character(df$child4C) == " "] <- NA
+
+df
+```
+
+```{r}
+ls <- c()
+for(c in c(2, 4, 6, 8))
+  if(!is.na(df[1,c]))
+    for(y in 1:df[1,c])
+      ls <- append(ls, as.character(df[1,c+1]))
+  
+ls <- list(ls)
+
+for(r in 2:594) {
+  for(c in c(2, 4, 6, 8))
+    if(!is.na(df[r,c]))
+      for(y in 1:df[r,c])
+        tempLS <- append(ls, as.character(df[r,c+1]))
+  ls <- append(ls, list(tempLS))
+}
+ls[]
+```
+
