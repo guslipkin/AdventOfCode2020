@@ -9,51 +9,52 @@ masterDF
 ```
 
 ```{r}
-com <- c("acc", "jmp")
 for(i in 1:626) {
-  breakFlag <- FALSE
   df <- masterDF
+  
   df$ipa <- NA
   df$ipa[1] <- 0
+  
   acc <- 0
   r <- 1
+  
   flag <- TRUE
+  breakFlag <- FALSE
   
-  if(as.character(df$ope[i]) == "acc")
-    df$ope[i] <- as.factor("jmp")
+  if(as.character(df$ope[i]) == "nop")
+    df$ope[i] <- "jmp"
   else if(as.character(df$ope[i]) == "jmp")
-    df$ope[i] <- as.factor("acc")
+    df$ope[i] <- "nop"
   
-  while(flag) {
-    if(as.character(df$ope[r]) == "acc" & r <= 626) {
-      acc <- acc + df$arg[r]
-      flag <- is.na(df$ipa[r + 1])
-      df$ipa[r + 1] <- r
-      r <- r + 1
+  if(as.character(df$ope[i]) != "acc") {
+    while(flag) {
+      if(as.character(df$ope[r]) == "acc" & r <= 626 & r >= 1) {
+        acc <- acc + df$arg[r]
+        flag <- is.na(df$ipa[r + 1])
+        df$ipa[r + 1] <- r
+        r <- r + 1
+        }
+      else if(as.character(df$ope[r]) == "jmp" & r + df$arg[r] <= 626 & r + df$arg[r] >= 1) {
+        flag <- is.na(df$ipa[r + df$arg[r]])
+        df$ipa[r + df$arg[r]] <- r
+        r <- r + df$arg[r]
+        }
+      else if(as.character(df$ope[r]) == "nop" & r <= 626 & r >= 1) {
+        flag <- is.na(df$ipa[r + 1])
+        df$ipa[r + 1] <- r
+        r <- r + 1
       }
-    else if(as.character(df$ope[r]) == "jmp" & r + df$arg[r] <= 626) {
-      flag <- is.na(df$ipa[r + df$arg[r]])
-      df$ipa[r + df$arg[r]] <- r
-      r <- r + df$arg[r]
-      }
-    else if(as.character(df$ope[r]) == "nop" & r <= 626) {
-      flag <- is.na(df$ipa[r + 1])
-      df$ipa[r + 1] <- r
-      r <- r + 1
-    }
     
-    if(r == 626) {
-      newacc <- acc
-      breakFlag <- TRUE
-      #break
-      }
+      if(r == 626) {
+        breakFlag <- TRUE
+        break
+        }
     }
-
+  }
   if(breakFlag)
     break
 }
 
 acc
-newacc
 ```
 

@@ -16,18 +16,18 @@ r <- 1
 flag <- TRUE
 
 while(flag == TRUE) {
-  if(as.character(df$ope[r]) == "acc" & r <= 626) {
+  if(as.character(df$ope[r]) == "acc" & r <= 626 & r >= 1) {
     acc <- acc + df$arg[r]
     flag <- is.na(df$ipa[r + 1])
     df$ipa[r + 1] <- r
     r <- r + 1
     }
-  else if(as.character(df$ope[r]) == "jmp" & r + df$arg[r] <= 626) {
+  else if(as.character(df$ope[r]) == "jmp" & r + df$arg[r] <= 626 & r + df$arg[r] >= 1) {
     flag <- is.na(df$ipa[r + df$arg[r]])
     df$ipa[r + df$arg[r]] <- r
     r <- r + df$arg[r]
     }
-  else if(as.character(df$ope[r]) == "nop" &r <= 626) {
+  else if(as.character(df$ope[r]) == "nop" & r <= 626 & r >= 1) {
     flag <- is.na(df$ipa[r + 1])
     df$ipa[r + 1] <- r
     r <- r + 1
