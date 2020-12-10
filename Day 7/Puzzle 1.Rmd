@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
-library(sets)
+library(tidyverse)
 
 df <- read.csv("../Day 7/input.csv")
 
@@ -14,80 +14,18 @@ df$child4C[as.character(df$child4C) == " "] <- NA
 
 df
 ```
+
 ```{r}
-df$rowlist <- list()
-tempLS1 <- c()
-tempLS2 <- c()
-tempLS3 <- c()
-tempLS4 <- c()
-for(r in 1:594) {
-  for(i in 1:df$child1N[r])
-    tempLS1 <- append(tempLS1, df$child1C[r])
-  for(i in 1:df$child2N[r])
-    tempLS2 <- append(tempLS2, df$child2C[r])
-  for(i in 1:df$child3N[r])
-    tempLS3 <- append(tempLS3, df$child3C[r])
-  for(i in 1:df$child4N[r])
-    tempLS4 <- append(tempLS4, df$child4C[r])
-  
-  df$rowlist[r] <- list(df$parent[1], tempLS1, tempLS2, tempLS3, tempLS4)
+shinygoldDF <- df %>% filter(as.character(child1C) == "shiny gold" | as.character(child2C) == "shiny gold" | 
+                               as.character(child3C) == "shiny gold" | as.character(child4C) == "shiny gold")
+
+oldRows <- 0
+
+while(oldRows != nrow(shinygoldDF)) {
+  oldRows <- nrow(shinygoldDF)
+  level <- unlist(shinygoldDF$parent)
+  shinygoldDF <- df %>% filter(as.character(parent) %in% level | as.character(child1C) %in% level | as.character(child2C)%in% level | 
+                                 as.character(child3C) %in% level | as.character(child4C) %in% level)
 }
+nrow(shinygoldDF)
 ```
-
-
-```{r}
-tempLS1 <- c()
-tempLS2 <- c()
-tempLS3 <- c()
-tempLS4 <- c()
-for(i in 1:df$child1N[1])
-  tempLS1 <- append(tempLS1, df$child1C[1])
-for(i in 1:df$child2N[1])
-  tempLS2 <- append(tempLS2, df$child2C[1])
-for(i in 1:df$child3N[1])
-  tempLS3 <- append(tempLS3, df$child3C[1])
-for(i in 1:df$child4N[1])
-  tempLS4 <- append(tempLS4, df$child4C[1])
-
-tempLS1
-tempLS2
-tempLS3
-tempLS4
-
-big1 <- list(df$parent[1], tempLS1, tempLS2, tempLS3)
-big2 <- list(big1, big1)
-big2
-```
-
-```{r}
-ls <- list()
-tempLS <- list(df[1,1])
-for(c in c(2, 4, 6, 8))
-  if(!is.na(df[1,c])) {
-    tempLS <- list()
-    for(y in 1:df[1,c])
-      tempLS <- append(tempLS, c(as.character(df[1,c+1])))
-    ls <- append(tempLS)
-  }
-  
-ls
-
-t1 <- c(1,2)
-t2 <- c(3,4)
-t3 <- list(t1,t2)
-t4 <- list(t2, t3)
-t4
-```
-
-```{r}
-for(r in 2:594) {
-  tempLS <- c("")
-  for(c in c(2, 4, 6, 8))
-    if(!is.na(df[r,c]))
-      for(y in 1:df[r,c])
-        tempLS <- list(append(ls, as.character(df[r,c+1])))
-  ls <- append(ls, tempLS)
-}
-ls[]
-```
-
