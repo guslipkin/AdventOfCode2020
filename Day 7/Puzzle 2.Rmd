@@ -42,6 +42,8 @@ runningTotal = 1
 for(i in shinygoldVEC) {
   shinygoldDF <- df %>% filter(as.character(parent) == i | as.character(child1C) == i | as.character(child2C) == i | 
                                as.character(child3C) == i | as.character(child4C) == i)
+  
+  df %>% filter(as.character(parent) == i)
 
   oldRows <- 0
 
