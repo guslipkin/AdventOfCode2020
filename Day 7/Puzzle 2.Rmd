@@ -3,6 +3,8 @@ title: "R Notebook"
 output: html_notebook
 ---
 
+>152
+
 ```{r}
 library(tidyverse)
 
@@ -16,45 +18,56 @@ df
 ```
 
 ```{r}
-shinygoldDF <- df %>% filter(as.character(parent) == "shiny gold" | as.character(child1C) == "shiny gold" | as.character(child2C) == "shiny gold" | 
-                               as.character(child3C) == "shiny gold" | as.character(child4C) == "shiny gold")
+longerDF <- data.frame(parent = "", nChild = 0, cChild = "")
 
+for(col in seq(3, 9, by = 2)) {
+  for(r in 1:nrow(df)) {
+    if(!is.na(df[r,col-1]))
+      for(i in 1:df[r,col-1]) {
+        longerDF <- rbind(longerDF, data.frame(parent = df[r,1], nChild = df[r,col-1], cChild = df[r,col]))
+    }
+  }
+}
+longerDF <- longerDF[-1,]
+```
+
+```{r}
+shinygoldDF <- longerDF %>%
+  filter("shiny gold" == as.character(cChild) | "shiny gold" == as.character(parent))
 oldRows <- 0
 
 while(oldRows != nrow(shinygoldDF)) {
   oldRows <- nrow(shinygoldDF)
   level <- unlist(shinygoldDF$parent)
-  shinygoldDF <- df %>% filter(as.character(parent) %in% level | as.character(child1C) %in% level | as.character(child2C)%in% level | 
-                                 as.character(child3C) %in% level | as.character(child4C) %in% level)
+  shinygoldDF <- longerDF %>% filter(as.character(parent) %in% level | as.character(cChild) %in% level)
+  shinygoldDF <- shinygoldDF[!duplicated(shinygoldDF[,c("parent")]),]
 }
-shinygoldDF
+
+total <- shinygoldDF %>%
+  select(parent) %>%
+  filter(parent != "shiny gold") %>%
+  n_distinct()
 ```
 
 ```{r}
-shinygoldVEC <- shinygoldDF %>% 
-  filter(as.character(parent) == "shiny gold") %>%
-  select(seq(3, 9, by=2)) %>%
-  unlist() %>%
-  as.vector()
+shinygoldDF <- longerDF
+level <- c("shiny gold")
+oldRows <- 0
 
-runningTotal = 1
-
-for(i in shinygoldVEC) {
-  shinygoldDF <- df %>% filter(as.character(parent) == i | as.character(child1C) == i | as.character(child2C) == i | 
-                               as.character(child3C) == i | as.character(child4C) == i)
-  
-  df %>% filter(as.character(parent) == i)
-
-  oldRows <- 0
-
-  while(oldRows != nrow(shinygoldDF)) {
-    oldRows <- nrow(shinygoldDF)
-    level <- unlist(shinygoldDF$parent)
-    shinygoldDF <- df %>% filter(as.character(parent) %in% level | as.character(child1C) %in% level | as.character(child2C)%in% level | 
-                                 as.character(child3C) %in% level | as.character(child4C) %in% level)
-  }
-  runningTotal <- runningTotal * nrow(shinygoldDF)
+while(oldRows != nrow(shinygoldDF)) {
+  oldRows <- nrow(shinygoldDF)
+  level <- unlist(shinygoldDF$parent)
+  shinygoldDF <- longerDF %>% filter(as.character(parent) %in% level | as.character(cChild) %in% level)
 }
-runningTotal
+
+shiny <- shinygoldDF %>%
+  filter("shiny gold" == as.character(cChild) | "shiny gold" == as.character(parent)) %>%
+  nrow()
 ```
+
+
+```{r}
+total - shiny
+```
+
 

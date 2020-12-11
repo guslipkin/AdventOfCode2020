@@ -16,9 +16,7 @@ df
 ```
 
 ```{r}
-shinygoldDF <- df %>% filter(as.character(child1C) == "shiny gold" | as.character(child2C) == "shiny gold" | 
-                               as.character(child3C) == "shiny gold" | as.character(child4C) == "shiny gold")
-
+level <- c("shiny gold")
 oldRows <- 0
 
 while(oldRows != nrow(shinygoldDF)) {
